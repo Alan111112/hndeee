@@ -1,0 +1,31 @@
+/* Placeholder shown in place of art that isn't in src/assets yet. */
+
+.asset-slot{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:calc(6 * var(--u));
+  padding:calc(8 * var(--u));
+  text-align:center;
+  font-family:'Press Start 2P', monospace;
+  color:var(--plum);
+  border:calc(3 * var(--u)) dashed var(--plum);
+  background:repeating-linear-gradient(
+    45deg,
+    var(--cream) 0 calc(8 * var(--u)),
+    #ffeef7 calc(8 * var(--u)) calc(16 * var(--u))
+  );
+  box-shadow:0 0 0 calc(3 * var(--u)) var(--pink-light);
+}
+
+.asset-slot__label{
+  font-size:clamp(7px, calc(10.4 * var(--u)), 11px);
+  line-height:1.7;
+  word-break:break-all;
+}
+
+.asset-slot__hint{
+  font-size:clamp(6px, calc(8.4 * var(--u)), 9px);
+  opacity:0.6;
+}

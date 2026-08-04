@@ -1,0 +1,56 @@
+.skip{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:calc(28 * var(--u));
+  padding:8%;
+  background:rgba(0,0,0,0.62);
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:manipulation;
+}
+
+.skip__clock{
+  width:clamp(110px, calc(170 * var(--u)), 200px);
+  aspect-ratio:1 / 1;
+  filter:drop-shadow(calc(6 * var(--u)) calc(6 * var(--u)) 0 rgba(0,0,0,0.5));
+}
+
+.skip__label{
+  margin:0;
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(11px, calc(18 * var(--u)), 20px);
+  line-height:1.8;
+  letter-spacing:calc(2 * var(--u));
+  text-align:center;
+  color:var(--cream);
+  text-shadow:calc(3 * var(--u)) calc(3 * var(--u)) 0 var(--plum);
+}
+
+.skip.is-ticking .skip__clock{
+  animation:skipWobble 140ms steps(2, end) infinite;
+}
+
+.skip.is-settled .skip__clock{
+  animation:skipLand 420ms cubic-bezier(.2,1.5,.4,1) 1;
+}
+
+@keyframes skipWobble{
+  0%  { transform:rotate(-0.8deg); }
+  100%{ transform:rotate(0.8deg); }
+}
+
+@keyframes skipLand{
+  0%  { transform:scale(1.12); }
+  100%{ transform:scale(1); }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .skip.is-ticking .skip__clock,
+  .skip.is-settled .skip__clock{ animation:none; }
+}

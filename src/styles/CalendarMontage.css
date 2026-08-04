@@ -1,0 +1,125 @@
+.montage{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.55);
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:manipulation;
+}
+
+.montage__cal{
+  position:relative;
+  width:clamp(140px, calc(210 * var(--u)), 250px);
+  aspect-ratio:3 / 4;
+  image-rendering:pixelated;
+}
+
+/* The frames carry an opaque plum background and the flip frames are taller
+   than the flat one, so the box takes the taller ratio (nothing gets cropped)
+   and fills the letterbox with the art's own background colour — then a pixel
+   frame makes the whole card read as deliberate rather than pasted on. */
+.montage__cal.has-art{
+  aspect-ratio:848 / 1264;
+  background:#a06682;
+  border:calc(5 * var(--u)) solid var(--plum);
+  box-shadow:
+    0 0 0 calc(4 * var(--u)) var(--pink-light),
+    calc(8 * var(--u)) calc(8 * var(--u)) 0 rgba(0,0,0,0.5);
+}
+
+/* every frame stays mounted; only one is visible at a time */
+.montage__art{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  image-rendering:pixelated;
+  opacity:0;
+}
+
+.montage__art.is-on{ opacity:1; }
+
+/* shake while the pages rip past, then a settle pop */
+.is-ripping{ animation:montageShake 110ms steps(2, end) infinite; }
+.is-settled{ animation:montageSettle 420ms cubic-bezier(.2,1.5,.4,1) 1; }
+
+@keyframes montageShake{
+  0%  { transform:translate(0,0) rotate(0deg); }
+  50% { transform:translate(calc(-2 * var(--u)), calc(1 * var(--u))) rotate(-0.6deg); }
+  100%{ transform:translate(calc(2 * var(--u)), 0) rotate(0.6deg); }
+}
+
+@keyframes montageSettle{
+  0%  { transform:scale(1.14); }
+  100%{ transform:scale(1); }
+}
+
+/* ---------- the day number ---------- */
+
+.montage__day{
+  position:absolute;
+  left:0;
+  right:0;
+  top:26%;
+  bottom:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(26px, calc(56 * var(--u)), 64px);
+  color:var(--plum);
+  font-variant-numeric:tabular-nums;
+}
+
+/* sits inside the cream page of the flat frame, allowing for the letterbox
+   that `contain` leaves above and below it */
+.montage__day.on-art{
+  left:17%;
+  right:22%;
+  top:28%;
+  bottom:24%;
+}
+
+.is-settled .montage__day{
+  color:var(--pink);
+  text-shadow:calc(3 * var(--u)) calc(3 * var(--u)) 0 var(--plum);
+}
+
+/* ---------- CSS-drawn stand-in, if the frames are ever missing ---------- */
+
+.montage__face{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  background:var(--cream);
+  border:calc(5 * var(--u)) solid var(--plum);
+  box-shadow:calc(6 * var(--u)) calc(6 * var(--u)) 0 rgba(0,0,0,0.55);
+}
+
+.montage__top{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:calc(22 * var(--u));
+  height:26%;
+  background:var(--pink);
+  border-bottom:calc(5 * var(--u)) solid var(--plum);
+}
+
+.montage__ring{
+  width:calc(8 * var(--u));
+  height:calc(14 * var(--u));
+  background:var(--plum);
+}
+
+@media (prefers-reduced-motion:reduce){
+  .is-ripping,
+  .is-settled{ animation:none; }
+}

@@ -1,0 +1,212 @@
+.scene-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  image-rendering:pixelated;
+  z-index:0;
+}
+
+/* the missing-art placeholder fills the frame like the real background would */
+.scene-bg.asset-slot{
+  border-width:calc(4 * var(--u));
+  box-shadow:none;
+}
+
+/* ---------- driving (scene.motion === 'driving') ----------
+   Two cheap tricks sell a moving car over a still background: the shot judders
+   like a car on tarmac, and light slides down over it the way roadside trees
+   and poles sweep across a windscreen. Both are pure CSS on the frame's own
+   elements, so they cost no timer and survive the scene swapping backgrounds
+   mid-ride (React keeps the same <img>, only its src changes).
+
+   scale() here is deliberate — the gotcha about growing through layout is about
+   buttons that must not be clipped. A background is meant to be clipped, and
+   the overscan is what stops the judder exposing the frame edge. */
+.scene-bg--driving{
+  animation:driveRumble 0.44s steps(1, end) infinite;
+  will-change:transform;
+}
+
+@keyframes driveRumble{
+  0%  { transform:scale(1.015) translateY(0); }
+  25% { transform:scale(1.015) translateY(calc(1.5 * var(--u))); }
+  50% { transform:scale(1.015) translateY(calc(-1 * var(--u))); }
+  75% { transform:scale(1.015) translateY(calc(0.5 * var(--u))); }
+  100%{ transform:scale(1.015) translateY(0); }
+}
+
+/* the light/shadow bands passing over the car, above the background and below
+   everything else */
+.drive-fx{
+  position:absolute;
+  /* one band taller than the frame at each end, so sliding a full band down
+     never drags an uncovered edge into view */
+  inset:calc(-104 * var(--u)) 0;
+  z-index:1;
+  pointer-events:none;
+  background:repeating-linear-gradient(
+    180deg,
+    rgba(255,244,214,0.13) 0,
+    rgba(255,244,214,0.13) calc(16 * var(--u)),
+    rgba(255,244,214,0) calc(16 * var(--u)),
+    rgba(255,244,214,0) calc(46 * var(--u)),
+    rgba(58,26,74,0.12) calc(46 * var(--u)),
+    rgba(58,26,74,0.12) calc(58 * var(--u)),
+    rgba(58,26,74,0) calc(58 * var(--u)),
+    rgba(58,26,74,0) calc(104 * var(--u))
+  );
+  animation:driveLight 1.15s linear infinite;
+  will-change:transform;
+}
+
+/* one full band cycle per loop, so it repeats seamlessly */
+@keyframes driveLight{
+  from{ transform:translateY(calc(-104 * var(--u))); }
+  to  { transform:translateY(0); }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .scene-bg--driving{ animation:none; }
+  .drive-fx{ animation:none; opacity:0.5; }
+}
+
+/* ---------- music toggle ---------- */
+
+.music-toggle{
+  position:absolute;
+  top:calc(10 * var(--u));
+  right:calc(10 * var(--u));
+  /* above the beats and the choice buttons — always reachable */
+  z-index:8;
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(6px, calc(9 * var(--u)), 11px);
+  letter-spacing:calc(1 * var(--u));
+  color:var(--plum);
+  background:var(--cream);
+  border:calc(3 * var(--u)) solid var(--plum);
+  box-shadow:calc(3 * var(--u)) calc(3 * var(--u)) 0 rgba(0,0,0,0.5);
+  padding:calc(5 * var(--u)) calc(8 * var(--u));
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.music-toggle[aria-pressed='true']{
+  color:var(--cream);
+  background:var(--plum);
+}
+
+.music-toggle:active{
+  transform:translate(calc(2 * var(--u)), calc(2 * var(--u)));
+  box-shadow:calc(1 * var(--u)) calc(1 * var(--u)) 0 rgba(0,0,0,0.5);
+}
+
+.end-card{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:calc(26 * var(--u));
+  padding:8%;
+  background:rgba(0,0,0,0.78);
+  text-align:center;
+}
+
+.end-card__title{
+  margin:0;
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(12px, calc(20 * var(--u)), 24px);
+  line-height:1.8;
+  color:var(--cream);
+  text-shadow:calc(3 * var(--u)) calc(3 * var(--u)) 0 var(--plum);
+}
+
+.end-card__btn{
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(8px, calc(12 * var(--u)), 14px);
+  letter-spacing:calc(1 * var(--u));
+  color:var(--cream);
+  background:var(--pink);
+  border:calc(4 * var(--u)) solid var(--plum);
+  box-shadow:
+    0 0 0 calc(3 * var(--u)) var(--pink-light),
+    calc(6 * var(--u)) calc(6 * var(--u)) 0 var(--plum);
+  padding:calc(12 * var(--u)) calc(18 * var(--u));
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.end-card__btn:active{
+  transform:translate(calc(3 * var(--u)), calc(3 * var(--u)));
+  box-shadow:
+    0 0 0 calc(3 * var(--u)) var(--pink-light),
+    calc(2 * var(--u)) calc(2 * var(--u)) 0 var(--plum);
+}
+
+/* ---------- the scene picker under BACK TO TITLE ---------- */
+
+.end-card__replay{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:calc(10 * var(--u));
+  width:100%;
+  /* the list is the only thing allowed to give: on a short phone it scrolls
+     rather than pushing BACK TO TITLE off the top of the card */
+  min-height:0;
+}
+
+.end-card__replay-title{
+  margin:0;
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(7px, calc(10 * var(--u)), 12px);
+  line-height:1.8;
+  color:var(--pink-light);
+}
+
+.end-card__scenes{
+  display:flex;
+  flex-direction:column;
+  gap:calc(6 * var(--u));
+  min-height:0;
+  overflow-y:auto;
+}
+
+.end-card__scene{
+  display:flex;
+  align-items:center;
+  gap:calc(8 * var(--u));
+  width:100%;
+  text-align:left;
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(7px, calc(9 * var(--u)), 11px);
+  line-height:1.6;
+  color:var(--cream);
+  background:rgba(58,26,74,0.85);
+  border:calc(3 * var(--u)) solid var(--plum);
+  padding:calc(8 * var(--u)) calc(10 * var(--u));
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.end-card__scene:hover{ background:var(--plum); }
+
+.end-card__scene:active{
+  transform:translate(calc(2 * var(--u)), calc(2 * var(--u)));
+}
+
+.end-card__scene:focus-visible{
+  outline:calc(3 * var(--u)) solid var(--gold);
+  outline-offset:calc(2 * var(--u));
+}
+
+.end-card__scene-no{
+  flex:0 0 auto;
+  color:var(--gold);
+}
+
+.end-card__scene-name{ flex:1 1 auto; }

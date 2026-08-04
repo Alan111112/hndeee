@@ -1,0 +1,161 @@
+/* Dialogue box — pinned to the lower portion of the scene frame.
+
+   The box hugs the line it's showing: a short line gets a short box. It's still
+   sized exactly once per line, because the ghost inside reserves the full text
+   before a character is typed (see DialogueBox.jsx) — so it never shifts
+   mid-line, only between lines.
+
+   Anchored and justified to its bottom edge, which is what makes the growth go
+   upward and, when a chat run is taller than the box, makes the overflow spill
+   off the TOP so the newest bubble stays visible. */
+
+.dlg{
+  position:absolute;
+  left:4%;
+  right:4%;
+  bottom:calc(4% + env(safe-area-inset-bottom));
+  min-height:calc(60 * var(--u));
+  max-height:34%;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  z-index:4;
+
+  background:rgba(0,0,0,0.7);
+  border:calc(4 * var(--u)) solid var(--cream);
+  box-shadow:
+    0 0 0 calc(4 * var(--u)) var(--plum),
+    calc(6 * var(--u)) calc(6 * var(--u)) 0 rgba(0,0,0,0.45);
+  padding:calc(18 * var(--u)) calc(16 * var(--u));
+
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:manipulation;
+  image-rendering:pixelated;
+}
+
+/* Behind a choice it keeps the old fixed height: ChoiceBox anchors its buttons
+   at 42% to sit just above a 34% box, so a shrinking box would leave them
+   floating over a gap. */
+.dlg--frozen{ height:34%; }
+
+.dlg:focus-visible{
+  outline:calc(3 * var(--u)) solid var(--gold);
+  outline-offset:calc(3 * var(--u));
+}
+
+/* Never shrink: an oversized run has to overflow the box (and get clipped at
+   the top by .dlg) rather than squash and clip its own newest line at the
+   bottom. Clipping is .dlg's job now, so bubble shadows can sit in the
+   padding instead of being cut off. */
+.dlg__body{
+  flex:0 0 auto;
+  display:flex;
+  flex-direction:column;
+}
+
+.dlg__body--narration{ justify-content:flex-start; }
+
+/* newest message sits at the bottom; older ones scroll off the top */
+.dlg__body--chat{
+  justify-content:flex-end;
+  gap:calc(9 * var(--u));
+}
+
+.dlg__narration{
+  margin:0;
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(8px, calc(12 * var(--u)), 14px);
+  line-height:2;
+  color:var(--cream);
+  text-shadow:calc(2 * var(--u)) calc(2 * var(--u)) 0 rgba(0,0,0,0.8);
+}
+
+/* ---------- text-message bubbles ---------- */
+
+.bubble{
+  display:flex;
+  flex-direction:column;
+  gap:calc(3 * var(--u));
+  max-width:78%;
+  padding:calc(7 * var(--u)) calc(9 * var(--u));
+  border:calc(3 * var(--u)) solid var(--plum);
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(7px, calc(10 * var(--u)), 12px);
+  line-height:1.8;
+}
+
+.bubble--me{
+  align-self:flex-end;
+  background:var(--pink);
+  color:#fff;
+  box-shadow:calc(3 * var(--u)) calc(3 * var(--u)) 0 rgba(0,0,0,0.45);
+}
+
+.bubble--them{
+  align-self:flex-start;
+  background:var(--cream);
+  color:var(--plum);
+  box-shadow:calc(3 * var(--u)) calc(3 * var(--u)) 0 rgba(0,0,0,0.45);
+}
+
+.bubble__who{
+  font-size:clamp(5px, calc(7 * var(--u)), 8px);
+  letter-spacing:calc(1 * var(--u));
+  opacity:0.75;
+}
+
+.bubble--me .bubble__who{ color:var(--gold); opacity:1; }
+.bubble--them .bubble__who{ color:var(--pink); opacity:1; }
+
+/* ---------- typewriter ---------- */
+
+/* the ghost copy reserves the final size, the shown copy paints over it */
+.typed{ position:relative; display:block; }
+.typed__ghost{ visibility:hidden; }
+.typed__shown{ position:absolute; inset:0; }
+
+/* text-input style caret, blinking at the end of the revealed text */
+.typed__caret{
+  display:inline-block;
+  width:calc(2 * var(--u));
+  height:1em;
+  margin-left:calc(3 * var(--u));
+  vertical-align:-0.12em;
+  background:currentColor;
+  animation:caretBlink 1.06s steps(1, end) infinite;
+}
+
+@keyframes caretBlink{
+  0%,49%  { opacity:1; }
+  50%,100%{ opacity:0; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .typed__caret{ animation:none; }
+}
+
+/* ---------- blinking "next" arrow ---------- */
+
+.dlg__next{
+  position:absolute;
+  right:calc(12 * var(--u));
+  bottom:calc(9 * var(--u));
+  width:0;
+  height:0;
+  border-left:calc(6 * var(--u)) solid transparent;
+  border-right:calc(6 * var(--u)) solid transparent;
+  border-top:calc(7 * var(--u)) solid var(--gold);
+  animation:dlgBlink 1s steps(2, end) infinite;
+}
+
+@keyframes dlgBlink{
+  0%,49%  { opacity:1; }
+  50%,100%{ opacity:0; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .dlg__next{ animation:none; }
+}

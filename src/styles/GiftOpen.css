@@ -1,0 +1,114 @@
+/* The last screen. Same slot the scare and the apology used. */
+.gift-open{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  background:#000;
+  overflow:hidden;
+  animation:giftOpenIn 400ms ease-out backwards;
+}
+
+@keyframes giftOpenIn{
+  from{ opacity:0; }
+  to  { opacity:1; }
+}
+
+/* full-bleed like a scene background: fixed slot, art fits inside it */
+.gift-open__img{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  image-rendering:pixelated;
+}
+
+.gift-open__burst{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+}
+
+.gift-open__heart{
+  position:absolute;
+  left:50%;
+  top:50%;
+  color:var(--pink);
+  animation:heartBurst 1.9s ease-out infinite;
+  will-change:transform, opacity;
+}
+
+/* three colours through the spray so it doesn't read as one flat sheet */
+.gift-open__heart:nth-child(3n)  { color:var(--gold); }
+.gift-open__heart:nth-child(3n+1){ color:var(--pink-light); }
+
+.gift-open__heart svg{
+  display:block;
+  /* 7:6, the heart's own viewBox — never height:auto */
+  width:calc(21 * var(--u));
+  height:calc(18 * var(--u));
+  filter:drop-shadow(calc(2 * var(--u)) calc(2 * var(--u)) 0 rgba(58,26,74,0.55));
+}
+
+/* out from the middle to every side. --dx/--dy are unitless, so multiplying by
+   --u keeps the throw the same shape on any phone. */
+@keyframes heartBurst{
+  0%{
+    opacity:0;
+    transform:translate(-50%, -50%) scale(0.2) rotate(0deg);
+  }
+  12%{ opacity:1; }
+  100%{
+    opacity:0;
+    transform:
+      translate(
+        calc(-50% + var(--dx) * var(--u)),
+        calc(-50% + var(--dy) * var(--u))
+      )
+      scale(var(--scale))
+      rotate(var(--spin));
+  }
+}
+
+.gift-open__back{
+  position:absolute;
+  left:50%;
+  bottom:calc(24 * var(--u) + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  z-index:3;
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(7px, calc(9 * var(--u)), 11px);
+  color:var(--cream);
+  background:rgba(58,26,74,0.85);
+  border:calc(3 * var(--u)) solid var(--plum);
+  box-shadow:calc(3 * var(--u)) calc(3 * var(--u)) 0 rgba(0,0,0,0.5);
+  padding:calc(8 * var(--u)) calc(12 * var(--u));
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.gift-open__back:active{
+  transform:translateX(-50%) translate(calc(2 * var(--u)), calc(2 * var(--u)));
+  box-shadow:calc(1 * var(--u)) calc(1 * var(--u)) 0 rgba(0,0,0,0.5);
+}
+
+.gift-open__back:focus-visible{
+  outline:calc(3 * var(--u)) solid var(--gold);
+  outline-offset:calc(2 * var(--u));
+}
+
+/* the gift and the wow still land; the hearts just sit still around the middle */
+@media (prefers-reduced-motion:reduce){
+  .gift-open{ animation:none; }
+  .gift-open__heart{
+    animation:none;
+    opacity:0.9;
+    transform:
+      translate(
+        calc(-50% + var(--dx) * var(--u) * 0.55),
+        calc(-50% + var(--dy) * var(--u) * 0.55)
+      );
+  }
+}

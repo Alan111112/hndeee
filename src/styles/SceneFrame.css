@@ -1,0 +1,50 @@
+/* Shared portrait stage — see SceneFrame.jsx. Scene contents position
+   themselves absolutely against .scene-frame and are clipped by it. */
+
+.scene-root{
+  --gutter:0px;
+  position:fixed;
+  inset:0;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:var(--gutter);
+  background:#2a1140;
+}
+
+.scene-frame{
+  position:relative;
+  /* phones: edge to edge, no bars */
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:var(--plum);
+  container-type:size;
+
+  /* One design pixel. The scene is authored against a 400x900 stage, so
+     `calc(14 * var(--u))` is "14px at that size" and scales with the frame.
+     Taking the smaller of the two axes means the layout fits however the
+     phone's aspect differs from 400:900 — the background covers the extra,
+     the content never overflows. Only descendants may read it; an element
+     cannot query its own container. Fonts wrap it in clamp() to stay legible
+     on small phones, spacing scales freely. */
+  --u:min(0.25cqw, 0.1111cqh);
+}
+
+/* Roomier screens letterbox the portrait stage rather than stretching a
+   phone-shaped scene across a desktop monitor. */
+@media (min-width:520px){
+  .scene-root{ --gutter:16px; }
+
+  .scene-frame{
+    width:min(100%, calc((100dvh - var(--gutter) * 2) * 400 / 900));
+    height:auto;
+    aspect-ratio:400 / 900;
+    max-height:100%;
+    border:4px solid var(--plum);
+    box-shadow:
+      0 0 0 4px var(--pink-light),
+      0 18px 44px rgba(0,0,0,0.45);
+  }
+}

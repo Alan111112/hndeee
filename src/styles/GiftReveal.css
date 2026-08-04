@@ -1,0 +1,70 @@
+/* Same slot the jumpscare had — it takes over from it, over everything else. */
+.gift-reveal{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:calc(30 * var(--u));
+  padding:8%;
+  background:rgba(0,0,0,0.9);
+  text-align:center;
+  /* a gentle fade after all that shaking */
+  animation:giftIn 320ms ease-out backwards;
+}
+
+@keyframes giftIn{
+  from{ opacity:0; }
+  to  { opacity:1; }
+}
+
+.gift-reveal__text{
+  margin:0;
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(10px, calc(15 * var(--u)), 18px);
+  line-height:1.9;
+  color:var(--cream);
+  text-shadow:calc(3 * var(--u)) calc(3 * var(--u)) 0 var(--plum);
+}
+
+.gift-reveal__btn{
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(8px, calc(13 * var(--u)), 15px);
+  line-height:1.7;
+  color:#fff;
+  background:var(--pink);
+  border:calc(4 * var(--u)) solid var(--plum);
+  box-shadow:
+    0 0 0 calc(3 * var(--u)) var(--pink-light),
+    calc(6 * var(--u)) calc(6 * var(--u)) 0 var(--plum);
+  padding:calc(14 * var(--u)) calc(18 * var(--u));
+  cursor:pointer;
+  touch-action:manipulation;
+  /* bobbing, so it reads as asking to be pressed */
+  animation:giftBob 1.4s ease-in-out infinite;
+}
+
+@keyframes giftBob{
+  0%, 100%{ transform:translateY(0); }
+  50%     { transform:translateY(calc(-3 * var(--u))); }
+}
+
+.gift-reveal__btn:active{
+  animation:none;
+  transform:translate(calc(3 * var(--u)), calc(3 * var(--u)));
+  box-shadow:
+    0 0 0 calc(3 * var(--u)) var(--pink-light),
+    calc(2 * var(--u)) calc(2 * var(--u)) 0 var(--plum);
+}
+
+.gift-reveal__btn:focus-visible{
+  outline:calc(3 * var(--u)) solid var(--gold);
+  outline-offset:calc(4 * var(--u));
+}
+
+@media (prefers-reduced-motion:reduce){
+  .gift-reveal,
+  .gift-reveal__btn{ animation:none; }
+}

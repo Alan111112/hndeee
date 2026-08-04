@@ -1,0 +1,131 @@
+/* sits in the gap above the dialogue box (which is 34% tall, 4% off the floor).
+   Anchored by its bottom edge, so a growing button expands upward into the
+   empty part of the scene instead of pushing anything around. */
+.choice{
+  position:absolute;
+  left:6%;
+  right:6%;
+  bottom:calc(42% + env(safe-area-inset-bottom));
+  z-index:6;
+  display:flex;
+  flex-direction:column;
+  gap:calc(12 * var(--u));
+}
+
+.choice__btn{
+  --fs:clamp(8px, calc(12 * var(--u)), 14px);
+
+  font-family:'Press Start 2P', monospace;
+  font-size:calc(var(--fs) * var(--grow, 1));
+  line-height:1.7;
+  text-align:center;
+  color:var(--plum);
+  background:var(--cream);
+  border:calc(4 * var(--u)) solid var(--plum);
+  box-shadow:
+    0 0 0 calc(3 * var(--u)) var(--pink-light),
+    calc(6 * var(--u)) calc(6 * var(--u)) 0 rgba(0,0,0,0.45);
+  padding:calc(12 * var(--u) * var(--grow, 1)) calc(14 * var(--u) * var(--grow, 1));
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:font-size .2s ease, padding .2s ease, transform .2s ease;
+  animation:choiceIn 260ms ease-out backwards;
+}
+
+/* Four deep, like the song list. Two and three fit at full size and match every
+   other choice in the game; past that, pull the type and spacing in so the whole
+   stack still clears the top of the frame. */
+.choice--many{ gap:calc(9 * var(--u)); }
+
+.choice--many .choice__btn{
+  --fs:clamp(7px, calc(9.5 * var(--u)), 12px);
+  padding:calc(10 * var(--u) * var(--grow, 1)) calc(10 * var(--u) * var(--grow, 1));
+}
+
+/* title over artist. `em` so both keep scaling with --grow like one label. */
+.choice__label{ display:block; }
+
+.choice__sub{
+  display:block;
+  margin-top:calc(7 * var(--u));
+  font-size:0.72em;
+  line-height:1.6;
+  opacity:0.82;
+}
+
+/* the one she's supposed to press: grows through layout, so it can wrap
+   inside the frame rather than scaling out past its edges */
+.choice__btn--main{
+  background:var(--pink);
+  color:#fff;
+  text-shadow:calc(2 * var(--u)) calc(2 * var(--u)) 0 rgba(58,26,85,0.6);
+}
+
+/* the one she isn't: shrinks away, then stops responding entirely */
+.choice__btn--refuse{
+  transform:scale(var(--shrink, 1));
+}
+
+.choice__btn:hover{ filter:brightness(1.06); }
+
+.choice__btn--refuse:active{
+  transform:scale(var(--shrink, 1)) translate(calc(3 * var(--u)), calc(3 * var(--u)));
+}
+
+.choice__btn--main:active{
+  transform:translate(calc(3 * var(--u)), calc(3 * var(--u)));
+  box-shadow:
+    0 0 0 calc(3 * var(--u)) var(--pink-light),
+    calc(2 * var(--u)) calc(2 * var(--u)) 0 rgba(0,0,0,0.45);
+}
+
+.choice__btn:disabled{
+  pointer-events:none;
+  opacity:0.55;
+}
+
+.choice__btn:focus-visible{
+  outline:calc(3 * var(--u)) solid var(--gold);
+  outline-offset:calc(3 * var(--u));
+}
+
+@keyframes choiceIn{
+  from{ opacity:0; transform:translateY(calc(10 * var(--u))); }
+  to  { opacity:1; transform:translateY(0); }
+}
+
+/* ---------- taunt across the top ---------- */
+
+.taunt{
+  position:absolute;
+  top:calc(7% + env(safe-area-inset-top));
+  left:6%;
+  right:6%;
+  z-index:7;
+  padding:calc(10 * var(--u)) calc(12 * var(--u));
+  text-align:center;
+  background:rgba(0,0,0,0.72);
+  border:calc(3 * var(--u)) solid var(--plum);
+  box-shadow:calc(4 * var(--u)) calc(4 * var(--u)) 0 rgba(0,0,0,0.45);
+  font-family:'Press Start 2P', monospace;
+  font-size:clamp(8px, calc(12 * var(--u)), 14px);
+  line-height:1.9;
+  color:var(--gold);
+  animation:tauntIn 220ms ease-out;
+}
+
+/* ghost reserves the final size so the typing text never reflows the box */
+.taunt__inner{ position:relative; display:block; }
+.taunt__ghost{ visibility:hidden; }
+.taunt__shown{ position:absolute; inset:0; }
+
+@keyframes tauntIn{
+  from{ opacity:0; transform:translateY(calc(-8 * var(--u))); }
+  to  { opacity:1; transform:translateY(0); }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .choice__btn,
+  .taunt{ animation:none; }
+  .choice__btn{ transition:none; }
+}

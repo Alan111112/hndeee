@@ -1,0 +1,54 @@
+/* Over absolutely everything — the end card, the music toggle, the lot. */
+.jumpscare{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  background:#000;
+  overflow:hidden;
+}
+
+/* the white hit on the first frame, gone in three hard steps */
+.jumpscare::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:var(--cream);
+  pointer-events:none;
+  animation:jumpFlash 200ms steps(3, end) forwards;
+}
+
+@keyframes jumpFlash{
+  from{ opacity:1; }
+  to  { opacity:0; }
+}
+
+/* Overscanned 14% so the shake can never drag a frame edge into view — the same
+   trick the driving judder uses, and for the same reason. */
+.jumpscare__img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  image-rendering:pixelated;
+  animation:quake 0.12s steps(1, end) infinite;
+  will-change:transform;
+}
+
+/* steps(1, end) so it snaps between positions instead of gliding — a floor
+   going out from under you, not a wobble */
+@keyframes quake{
+  0%  { transform:scale(1.14) translate(calc(-7 * var(--u)), calc(5 * var(--u))) rotate(-1.4deg); }
+  20% { transform:scale(1.17) translate(calc(8 * var(--u)), calc(-6 * var(--u))) rotate(1.6deg); }
+  40% { transform:scale(1.13) translate(calc(-6 * var(--u)), calc(-7 * var(--u))) rotate(1deg); }
+  60% { transform:scale(1.18) translate(calc(7 * var(--u)), calc(6 * var(--u))) rotate(-1.8deg); }
+  80% { transform:scale(1.15) translate(calc(-8 * var(--u)), calc(-4 * var(--u))) rotate(0.6deg); }
+  100%{ transform:scale(1.14) translate(calc(5 * var(--u)), calc(7 * var(--u))) rotate(-1.1deg); }
+}
+
+/* the scare still lands — the image and the sound — it just holds still */
+@media (prefers-reduced-motion:reduce){
+  .jumpscare__img{ animation:none; transform:scale(1.14); }
+  .jumpscare::after{ animation:none; opacity:0; }
+}
