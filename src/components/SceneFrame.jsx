@@ -8,7 +8,9 @@ import '../styles/SceneFrame.css';
 export default function SceneFrame({ children }) {
   return (
     <div className="scene-root">
-      <div className="scene-frame">{children}</div>
+      <div className="scene-frame">
+        <div className="scene-stage">{children}</div>
+      </div>
     </div>
   );
 }

@@ -32,6 +32,55 @@
   --u:min(0.25cqw, 0.1111cqh);
 }
 
+/* ---------- the stage the UI is actually laid out on ----------
+   The frame fills the phone so the art can run edge to edge, but a phone is
+   almost never exactly 400:900. Percentages measure the frame while `--u`
+   measures the smaller axis, so on any other aspect the two disagree and the
+   layout stretches sideways while the type stays small — a 375x667 phone was
+   laying the dialogue box out 27% wider than designed.
+
+   This is the real 400x900 stage: exactly 400u by 900u, centred. Everything
+   inside it can mix % and --u freely again, because here they mean the same
+   thing on every device. */
+.scene-stage{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%, -50%);
+  width:calc(400 * var(--u));
+  height:calc(900 * var(--u));
+}
+
+/* Layers that must still cover the whole phone rather than just the stage: the
+   art, and anything that blacks the screen out. They break back out with
+   container units, so the stage being smaller than the frame never exposes an
+   edge. Kept off `transform`, which the driving judder needs, and scoped to
+   .scene-stage so they outrank the component files whatever order the bundler
+   emits them in. */
+.scene-stage .scene-bg,
+.scene-stage .drive-fx,
+.scene-stage .end-card,
+.scene-stage .montage,
+.scene-stage .skip,
+.scene-stage .jumpscare,
+.scene-stage .gift-reveal,
+.scene-stage .gift-open,
+.scene-stage .ts-bg,
+.scene-stage .ts-hearts{
+  left:calc((400 * var(--u) - 100cqw) / 2);
+  top:calc((900 * var(--u) - 100cqh) / 2);
+  right:auto;
+  bottom:auto;
+  width:100cqw;
+  height:100cqh;
+}
+
+/* the light bands still start a band above the frame and end one below */
+.scene-stage .drive-fx{
+  top:calc((900 * var(--u) - 100cqh) / 2 - 104 * var(--u));
+  height:calc(100cqh + 208 * var(--u));
+}
+
 /* Roomier screens letterbox the portrait stage rather than stretching a
    phone-shaped scene across a desktop monitor. */
 @media (min-width:520px){
